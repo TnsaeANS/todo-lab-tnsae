@@ -20,7 +20,7 @@ jobs:
           bundler-cache: true
 
       - name: Scan for common Rails security vulnerabilities using static analysis
-        run: bin/brakeman --no-pager
+        run: bundle exec brakeman --no-pager
 
   lint:
     runs-on: ubuntu-latest
@@ -35,34 +35,11 @@ jobs:
           bundler-cache: true
 
       - name: Lint code for consistent style
-        run: bin/rubocop -f github
+        run: bundle exec rubocop -f github
 
   test:
     runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:13
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
-          
-      redis:
-        image: redis:7
-        options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 6379:6379
-
+    
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -74,16 +51,12 @@ jobs:
           bundler-cache: true
 
       - name: Set up database
-        run: |
-          cp config/database.yml.ci config/database.yml
-          bin/rails db:create db:schema:load
+        run: bin/rails db:create db:schema:load
 
       - name: Run tests
         run: bin/rails test
         env:
-          DATABASE_URL: postgres://postgres:postgres@localhost:5432
           RAILS_ENV: test
-          REDIS_URL: redis://localhost:6379
 
   docker:
     runs-on: ubuntu-latest
