@@ -44,6 +44,14 @@ group :development do
   # gem "spring-commands-rspec"
 end
 
+
+# group :development, :test do
+#   gem 'brakeman', require: false
+#   gem 'rubocop', require: false
+#   gem 'rubocop-rails-omakase', require: false
+# end
+
+
 group :test do
   gem "shoulda-matchers"
   gem "simplecov"
